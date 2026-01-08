@@ -38,7 +38,7 @@ public class EntryMapper
     public InfrastructureModel.Entry ToModel(DomainEntry domain)
     {
         InfrastructureModel.Category? category = null;
-        DomainCategory? domainCategory = domain.GetCategory();
+        DomainCategory? domainCategory = domain.Category;
 
         if (domainCategory != null)
         {
@@ -47,14 +47,14 @@ public class EntryMapper
 
         return new InfrastructureModel.Entry
         {
-            Id = domain.GetId().AsInt(),
-            Name = domain.GetName(),
-            Description = domain.GetDescription(),
-            CreatedAt = domain.GetCreatedAt(),
-            UpdatedAt = domain.GetUpdatedAt(),
+            Id = domain.Id.Value,
+            Name = domain.Name,
+            Description = domain.Description,
+            CreatedAt = domain.CreatedAt,
+            UpdatedAt = domain.UpdatedAt,
             Category = category,
-            Value = domain.GetValue(),
-            Type = domain.GetEntryType()
+            Value = domain.Value,
+            Type = domain.Type
         };
     }
 }

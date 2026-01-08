@@ -59,8 +59,9 @@ namespace backend.infrastructure.http.controller
                 return BadRequest(ModelState);
             }
 
+            entry.CreatedAt = DateTime.UtcNow;
             _entryRepository.Save(newEntry);
-            return CreatedAtAction(nameof(GetEntryById), new { id = newEntry.GetId().Value }, newEntry);
+            return CreatedAtAction(nameof(GetEntryById), new { id = newEntry.Id.Value }, newEntry);
         }
 
         [HttpPut("{id}")]

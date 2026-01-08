@@ -18,7 +18,7 @@ public class EFCategoryRepository: ICategoryRepository
 
     public void Save(Category category)
     {
-        var existingModel = _context.Categories.FirstOrDefault(c => c.Id == category.GetId().Value);
+        var existingModel = _context.Categories.FirstOrDefault(c => c.Id == category.Id.Value);
         if (existingModel != null)
         {
             var updatedModel = _mapper.ToModel(category);
@@ -33,8 +33,12 @@ public class EFCategoryRepository: ICategoryRepository
 
     public void Delete(Category category)
     {
-        _context.Categories.Remove(_mapper.ToModel(category));
-        _context.SaveChanges();
+        var categoryModelToDelete = _context.Categories.Find(category.Id.Value);
+        if (categoryModelToDelete != null)
+        {
+            _context.Categories.Remove(categoryModelToDelete);
+            _context.SaveChanges();
+        }
     }
 
     public IEnumerable<Category> FindAll()

@@ -32,4 +32,4 @@ Content-Type: application/json
 ###
 # Delete a category
 # @name deleteCategory
-DELETE http://localhost:5010/api/Categories/1
+DELETE http://localhost:5010/api/Categories/

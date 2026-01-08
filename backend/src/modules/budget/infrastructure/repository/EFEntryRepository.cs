@@ -19,7 +19,7 @@ public class EFEntryRepository: IEntryRepository
 
     public void Save(Entry entry)
     {
-        var existingModel = _context.Entries.FirstOrDefault(e => e.Id == entry.GetId().Value);
+        var existingModel = _context.Entries.FirstOrDefault(e => e.Id == entry.Id.Value);
         if (existingModel != null)
         {
             var updatedModel = _mapper.ToModel(entry);
@@ -34,8 +34,12 @@ public class EFEntryRepository: IEntryRepository
 
     public void Delete(Entry entry)
     {
-        _context.Entries.Remove(_mapper.ToModel(entry));
-        _context.SaveChanges();
+        var entryModelToDelete = _context.Entries.Find(entry.Id.Value);
+        if (entryModelToDelete != null)
+        {
+            _context.Entries.Remove(entryModelToDelete);
+            _context.SaveChanges();
+        }
     }
 
     public IEnumerable<Entry> FindAllWithinDateRange(DateTime startDate, DateTime endDate)

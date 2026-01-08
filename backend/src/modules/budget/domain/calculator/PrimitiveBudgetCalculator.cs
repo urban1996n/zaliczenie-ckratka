@@ -12,11 +12,11 @@ public class PrimitiveBudgetCalculator: IBudgetCalculator
         {
             if (entry.IsExpense())
             {
-                BudgetValue -= entry.GetValue();
+                BudgetValue -= entry.Value;
                 continue;
             }
 
-            BudgetValue += entry.GetValue();
+            BudgetValue += entry.Value;
         }
 
         return BudgetValue;

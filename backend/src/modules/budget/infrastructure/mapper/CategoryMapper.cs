@@ -11,8 +11,8 @@ public class CategoryMapper
         return new Category(
             new EntityId(model.Id),
             model.Name,
-            System.DateTime.Now, // Assuming CreatedAt is not in the model, initialize it.
-            null // Assuming UpdatedAt is not in the model, initialize it.
+            model.CreatedAt,
+            model.UpdatedAt
         );
     }
 
@@ -20,8 +20,10 @@ public class CategoryMapper
     {
         return new InfrastructureModel.Category
         {
-            Id = domain.GetId().AsInt(),
-            Name = domain.GetName()
+            Id = domain.Id.Value,
+            Name = domain.Name,
+            CreatedAt = domain.CreatedAt,
+            UpdatedAt = domain.UpdatedAt
         };
     }
 }

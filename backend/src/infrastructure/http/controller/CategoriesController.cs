@@ -47,10 +47,11 @@ namespace backend.infrastructure.http.controller
             }
 
             // Ensure the incoming category has a new ID
+            category.CreatedAt = DateTime.UtcNow;
             var newCategory = _categoryMapper.ToDomain(category);
             _categoryRepository.Save(newCategory);
 
-            return CreatedAtAction(nameof(GetCategoryById), new { id = newCategory.GetId().Value }, newCategory);
+            return CreatedAtAction(nameof(GetCategoryById), new { id = newCategory.Id.Value }, newCategory);
         }
 
         [HttpPut("{id}")]
