@@ -52,7 +52,7 @@ public class Entry
         return _category;
     }
 
-    public void SetCategory(Category category)
+    public void SetCategory(Category? category)
     {
         _category = category;
         _updatedAt = DateTime.Now;

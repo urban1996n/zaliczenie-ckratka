@@ -1,6 +1,7 @@
 using backend.infrastructure.database;
 using backend.modules.budget.domain.entry;
 using backend.modules.budget.infrastructure.mappers;
+using backend.modules.shared.domain.valueObjects;
 
 namespace backend.modules.budget.infrastructure.repository;
 
@@ -18,12 +19,23 @@ public class EFEntryRepository: IEntryRepository
 
     public void Save(Entry entry)
     {
-        _context.Entries.Add(_mapper.ToModel(entry));
+        var existingModel = _context.Entries.FirstOrDefault(e => e.Id == entry.GetId().Value);
+        if (existingModel != null)
+        {
+            var updatedModel = _mapper.ToModel(entry);
+            _context.Entry(existingModel).CurrentValues.SetValues(updatedModel);
+        }
+        else
+        {
+            _context.Entries.Add(_mapper.ToModel(entry));
+        }
+        _context.SaveChanges();
     }
 
     public void Delete(Entry entry)
     {
         _context.Entries.Remove(_mapper.ToModel(entry));
+        _context.SaveChanges();
     }
 
     public IEnumerable<Entry> FindAllWithinDateRange(DateTime startDate, DateTime endDate)
@@ -32,5 +44,11 @@ public class EFEntryRepository: IEntryRepository
             .Where(e => e.CreatedAt >= startDate && e.CreatedAt <= endDate)
             .Select(e => _mapper.ToDomain(e))
             .ToList();
+    }
+
+    public Entry? FindById(EntityId id)
+    {
+        var model = _context.Entries.FirstOrDefault(e => e.Id == id.Value);
+        return model == null ? null : _mapper.ToDomain(model);
     }
 }

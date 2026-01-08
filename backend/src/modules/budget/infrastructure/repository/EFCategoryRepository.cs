@@ -1,6 +1,7 @@
 using backend.infrastructure.database;
 using backend.modules.budget.domain.category;
 using backend.modules.budget.infrastructure.mappers;
+using backend.modules.shared.domain.valueObjects;
 
 namespace backend.modules.budget.infrastructure.repository;
 
@@ -17,7 +18,16 @@ public class EFCategoryRepository: ICategoryRepository
 
     public void Save(Category category)
     {
-        _context.Categories.Add(_mapper.ToModel(category));
+        var existingModel = _context.Categories.FirstOrDefault(c => c.Id == category.GetId().Value);
+        if (existingModel != null)
+        {
+            var updatedModel = _mapper.ToModel(category);
+            _context.Entry(existingModel).CurrentValues.SetValues(updatedModel);
+        }
+        else
+        {
+            _context.Categories.Add(_mapper.ToModel(category));
+        }
         _context.SaveChanges();
     }
 
@@ -30,5 +40,11 @@ public class EFCategoryRepository: ICategoryRepository
     public IEnumerable<Category> FindAll()
     {
         return _context.Categories.Select(_mapper.ToDomain).ToList();
+    }
+
+    public Category? FindById(EntityId id)
+    {
+        var model = _context.Categories.FirstOrDefault(c => c.Id == id.Value);
+        return model == null ? null : _mapper.ToDomain(model);
     }
 }

@@ -10,6 +10,6 @@ public class Entry
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
     public Category? Category { get; set; }
-    public UInt32 Value { get; set; }
+    public int Value { get; set; }
     public Type Type { get; set; }
 }

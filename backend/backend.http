@@ -1,6 +1,35 @@
-@backend_HostAddress = http://localhost:5010
-
-GET {{backend_HostAddress}}/weatherforecast/
-Accept: application/json
+###
+# Get all categories
+# @name getAllCategories
+GET http://localhost:5010/api/Categories
 
 ###
+# Get category by ID
+# @name getCategoryById
+GET http://localhost:5010/api/Categories/1
+
+###
+# Create a new category
+# @name createCategory
+POST http://localhost:5010/api/Categories
+Content-Type: application/json
+
+{
+  "name": "New Category"
+}
+
+###
+# Update a category
+# @name updateCategory
+PUT http://localhost:5010/api/Categories/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "name": "Updated Category"
+}
+
+###
+# Delete a category
+# @name deleteCategory
+DELETE http://localhost:5010/api/Categories/1

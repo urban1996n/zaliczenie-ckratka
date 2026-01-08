@@ -53,7 +53,7 @@ public class EntryMapper
             CreatedAt = domain.GetCreatedAt(),
             UpdatedAt = domain.GetUpdatedAt(),
             Category = category,
-            Value = (uint)domain.GetValue(),
+            Value = domain.GetValue(),
             Type = domain.GetEntryType()
         };
     }
