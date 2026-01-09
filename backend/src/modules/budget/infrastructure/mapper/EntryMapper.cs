@@ -4,7 +4,7 @@ using InfrastructureModel = backend.modules.budget.infrastructure.model;
 using DomainEntry = backend.modules.budget.domain.entry.Entry;
 using DomainCategory = backend.modules.budget.domain.category.Category;
 
-namespace backend.modules.budget.infrastructure.mappers;
+namespace backend.modules.budget.infrastructure.mapper;
 
 public class EntryMapper
 {

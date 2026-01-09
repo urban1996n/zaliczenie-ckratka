@@ -1,6 +1,6 @@
 using backend.infrastructure.database;
 using backend.modules.budget.domain.category;
-using backend.modules.budget.infrastructure.mappers;
+using backend.modules.budget.infrastructure.mapper;
 using backend.modules.shared.domain.valueObjects;
 
 namespace backend.modules.budget.infrastructure.repository;

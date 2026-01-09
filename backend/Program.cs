@@ -2,7 +2,7 @@ using backend.infrastructure.database;
 using backend.modules.budget.domain.calculator;
 using backend.modules.budget.domain.category;
 using backend.modules.budget.domain.entry;
-using backend.modules.budget.infrastructure.mappers;
+using backend.modules.budget.infrastructure.mapper;
 using backend.modules.budget.infrastructure.repository;
 
 var builder = WebApplication.CreateBuilder(args);

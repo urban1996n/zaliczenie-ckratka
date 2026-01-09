@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using backend.modules.budget.domain.category;
-using backend.modules.budget.infrastructure.mappers;
+using backend.modules.budget.infrastructure.mapper;
 using backend.modules.shared.domain.valueObjects;
 using Model = backend.modules.budget.infrastructure.model.Category;
 
