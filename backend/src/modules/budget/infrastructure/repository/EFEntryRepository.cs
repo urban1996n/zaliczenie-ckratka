@@ -1,7 +1,7 @@
 using backend.infrastructure.database;
 using backend.modules.budget.domain.entry;
 using backend.modules.budget.infrastructure.mapper;
-using backend.modules.shared.domain.valueObjects;
+using backend.modules.shared.domain.valueObject;
 using Model = backend.modules.budget.infrastructure.model.Entry;
 namespace backend.modules.budget.infrastructure.repository;
 

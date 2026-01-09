@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using backend.modules.budget.domain.category;
 using backend.modules.budget.infrastructure.mapper;
-using backend.modules.shared.domain.valueObjects;
+using backend.modules.shared.domain.valueObject;
 using Model = backend.modules.budget.infrastructure.model.Category;
 
 namespace backend.infrastructure.http.controller

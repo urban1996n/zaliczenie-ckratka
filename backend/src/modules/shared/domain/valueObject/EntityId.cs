@@ -1,4 +1,4 @@
-namespace backend.modules.shared.domain.valueObjects;
+namespace backend.modules.shared.domain.valueObject;
 
 public class EntityId
 {

@@ -1,5 +1,5 @@
 using backend.modules.budget.domain.category;
-using backend.modules.shared.domain.valueObjects;
+using backend.modules.shared.domain.valueObject;
 using InfrastructureModel = backend.modules.budget.infrastructure.model;
 
 namespace backend.modules.budget.infrastructure.mapper;

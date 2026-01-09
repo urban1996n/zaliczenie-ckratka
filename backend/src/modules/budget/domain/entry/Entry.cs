@@ -1,5 +1,5 @@
 using backend.modules.budget.domain.category;
-using backend.modules.shared.domain.valueObjects;
+using backend.modules.shared.domain.valueObject;
 
 namespace backend.modules.budget.domain.entry;
 
