@@ -12,4 +12,5 @@ public class Entry
     public Category? Category { get; set; }
     public int Value { get; set; }
     public Type Type { get; set; }
+    public DateTime EntryDate { get; set; }
 }

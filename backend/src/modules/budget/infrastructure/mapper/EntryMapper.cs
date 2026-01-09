@@ -31,7 +31,8 @@ public class EntryMapper
                 DateTime.UtcNow,
                 model.Name,
                 model.Description,
-                model.Type
+                model.Type,
+                model.EntryDate
             );
         }
 
@@ -43,7 +44,8 @@ public class EntryMapper
             model.UpdatedAt,
             model.Name,
             model.Description,
-            model.Type
+            model.Type,
+            model.EntryDate
         );
     }
 

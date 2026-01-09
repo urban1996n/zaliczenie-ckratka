@@ -62,8 +62,7 @@ namespace backend.infrastructure.http.controller
             int? categoryId = entry.CategoryId;
             EntityId? entityId = categoryId.HasValue ? new EntityId(categoryId.Value) : null; 
             var category =  entityId == null ? null : _categoryRepository.FindById(entityId);
-        
-            var newEntry = new Entry(entry.Value, category, DateTime.UtcNow, entry.Name, entry.Description, entry.Type);
+            var newEntry = new Entry(entry.Value, category, DateTime.UtcNow, entry.Name, entry.Description, entry.Type, entry.Date);
             _entryRepository.Save(newEntry);
 
             return CreatedAtAction(nameof(GetEntryById), new { id = newEntry.Id.Value }, newEntry);
@@ -89,7 +88,7 @@ namespace backend.infrastructure.http.controller
             existingEntry.SetName(entry.Name);
             existingEntry.SetDescription(entry.Description);
             existingEntry.SetType(entry.Type);
-
+            existingEntry.SetEntryDate(entry.Date);
             _entryRepository.Save(existingEntry); 
 
             return NoContent();

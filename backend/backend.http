@@ -55,7 +55,8 @@ Content-Type: application/json
   "description": "This is a new entry",
   "value": 100,
   "type": 1,
-  "categoryId": 1
+  "categoryId": 1,
+  "date": "2025-01-01"
 }
 
 ###
@@ -65,15 +66,16 @@ PUT http://localhost:5010/api/Entries/1
 Content-Type: application/json
 
 {
-  "id": 1,
   "name": "Updated Entry",
   "description": "This is an updated entry",
   "value": 150,
   "type": 0,
-  "categoryId": 2
+  "categoryId": 2,
+  "date": "2025-01-01"
 }
 
 ###
 # Delete an entry
 # @name deleteEntry
 DELETE http://localhost:5010/api/Entries/1
+

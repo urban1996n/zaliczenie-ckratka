@@ -14,8 +14,10 @@ public class Entry
     public string? Description { get; private set; }
 
     public Type Type { get; private set; }
+    
+    public DateTime EntryDate { get; private set; }
 
-    public Entry(EntityId id, int value, Category? category, DateTime createdAt, DateTime? updatedAt, string name, string? description, Type type)
+    public Entry(EntityId id, int value, Category? category, DateTime createdAt, DateTime? updatedAt, string name, string? description, Type type, DateTime entryDate)
     {
         Id = id;
         Value = value;
@@ -25,9 +27,10 @@ public class Entry
         Name = name;
         Description = description;
         Type = type;
+        EntryDate = entryDate;
     }
 
-    public Entry(int value, Category? category, DateTime createdAt, string name, string? description, Type type)
+    public Entry(int value, Category? category, DateTime createdAt, string name, string? description, Type type, DateTime entryDate)
     {
         Value = value;
         Category = category;
@@ -35,6 +38,7 @@ public class Entry
         Name = name;
         Description = description;
         Type = type;
+        EntryDate = entryDate;
     }
 
     public bool IsExpense()
@@ -80,5 +84,12 @@ public class Entry
     public void SetType(Type type)
     {
         Type = type;
+        UpdatedAt = DateTime.Now;
+    }
+
+    public void SetEntryDate(DateTime entryDate)
+    {
+        EntryDate = entryDate;
+        UpdatedAt = DateTime.Now;
     }
 }

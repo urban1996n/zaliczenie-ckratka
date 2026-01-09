@@ -8,4 +8,6 @@ public class EntryDto
     public int? CategoryId { get; set; }
     public int Value { get; set; }
     public Type Type { get; set; }
+    
+    public DateTime Date { get; set; }
 }
