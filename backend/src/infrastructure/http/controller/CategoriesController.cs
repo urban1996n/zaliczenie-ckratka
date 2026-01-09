@@ -73,11 +73,10 @@ namespace backend.infrastructure.http.controller
                 return NotFound();
             }
 
-            // Update properties
             existingCategory.SetName(category.Name);
 
-            _categoryRepository.Save(existingCategory); // Assuming Save can handle updates now.
-
+            _categoryRepository.Save(existingCategory);
+            
             return NoContent();
         }
 

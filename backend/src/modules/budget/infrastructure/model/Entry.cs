@@ -4,7 +4,7 @@ using backend.modules.budget.domain.entry;
 
 public class Entry
 {
-    public int Id { get; set; }
+    public int? Id { get; set; }
     public required string Name { get; set; }
     public string? Description { get; set; }
     public DateTime CreatedAt { get; set; }

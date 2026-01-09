@@ -23,8 +23,20 @@ public class EntryMapper
             domainCategory = _categoryMapper.ToDomain(model.Category);
         }
 
+        if (model.Id == null)
+        {
+            return new DomainEntry(
+                model.Value,
+                domainCategory,
+                DateTime.UtcNow,
+                model.Name,
+                model.Description,
+                model.Type
+            );
+        }
+
         return new DomainEntry(
-            new EntityId(model.Id),
+            new EntityId(model.Id.Value),
             (int)model.Value,
             domainCategory,
             model.CreatedAt,
@@ -45,9 +57,11 @@ public class EntryMapper
             category = _categoryMapper.ToModel(domainCategory);
         }
 
+        int? entryId = domain.Id != null ? domain.Id.Value : null;
+        
         return new InfrastructureModel.Entry
         {
-            Id = domain.Id.Value,
+            Id = entryId,
             Name = domain.Name,
             Description = domain.Description,
             CreatedAt = domain.CreatedAt,

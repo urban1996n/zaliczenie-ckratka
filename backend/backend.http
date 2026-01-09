@@ -32,4 +32,48 @@ Content-Type: application/json
 ###
 # Delete a category
 # @name deleteCategory
-DELETE http://localhost:5010/api/Categories/
+DELETE http://localhost:5010/api/Categories/1
+
+###
+# Get all entries
+# @name getAllEntries
+GET http://localhost:5010/api/Entries
+
+###
+# Get entry by ID
+# @name getEntryById
+GET http://localhost:5010/api/Entries/1
+
+###
+# Create a new entry
+# @name createEntry
+POST http://localhost:5010/api/Entries
+Content-Type: application/json
+
+{
+  "name": "New Entry",
+  "description": "This is a new entry",
+  "value": 100,
+  "type": 1,
+  "categoryId": 1
+}
+
+###
+# Update an entry
+# @name updateEntry
+PUT http://localhost:5010/api/Entries/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "name": "Updated Entry",
+  "description": "This is an updated entry",
+  "value": 150,
+  "type": 0,
+  "categoryId": 2
+}
+
+###
+# Delete an entry
+# @name deleteEntry
+DELETE http://localhost:5010/api/Entries/1

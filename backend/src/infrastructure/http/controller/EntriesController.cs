@@ -1,3 +1,4 @@
+using backend.infrastructure.http.controller.dto;
 using backend.modules.budget.domain.category;
 using Microsoft.AspNetCore.Mvc;
 using backend.modules.budget.domain.entry;
@@ -51,30 +52,29 @@ namespace backend.infrastructure.http.controller
         }
 
         [HttpPost]
-        public ActionResult<Entry> CreateEntry([FromBody] Model entry)
+        public ActionResult<Entry> CreateEntry([FromBody] EntryDto entry)
         {
-            var newEntry = _entryMapper.ToDomain(entry);
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            entry.CreatedAt = DateTime.UtcNow;
+            int? categoryId = entry.CategoryId;
+            EntityId? entityId = categoryId.HasValue ? new EntityId(categoryId.Value) : null; 
+            var category =  entityId == null ? null : _categoryRepository.FindById(entityId);
+        
+            var newEntry = new Entry(entry.Value, category, DateTime.UtcNow, entry.Name, entry.Description, entry.Type);
             _entryRepository.Save(newEntry);
+
             return CreatedAtAction(nameof(GetEntryById), new { id = newEntry.Id.Value }, newEntry);
         }
 
         [HttpPut("{id}")]
-        public IActionResult UpdateEntry(int id, [FromBody] Model entry)
+        public IActionResult UpdateEntry(int id, [FromBody] EntryDto entry)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
-            }
-
-            if (entry.Id != id)
-            {
-                return BadRequest("Entry ID in the body does not match the route ID.");
             }
 
             var existingEntry = _entryRepository.FindById(new EntityId(id));
@@ -82,15 +82,13 @@ namespace backend.infrastructure.http.controller
             {
                 return NotFound();
             }
-            
+
+            var category = entry.CategoryId == null ? null : _categoryRepository.FindById(new EntityId(entry.CategoryId.Value));
             existingEntry.SetValue(entry.Value);
-            existingEntry.SetCategory(_categoryRepository.FindById(new EntityId(entry.Category.Id)));
-            // Update properties
-            // existingEntry.Amount = entry.Amount;
-            // existingEntry.Comment = entry.Comment;
-            // existingEntry.CreatedAt = entry.CreatedAt;
-            // existingEntry.Type = entry.Type;
-            // existingEntry.CategoryId = entry.CategoryId;
+            existingEntry.SetCategory(category);
+            existingEntry.SetName(entry.Name);
+            existingEntry.SetDescription(entry.Description);
+            existingEntry.SetType(entry.Type);
 
             _entryRepository.Save(existingEntry); 
 

@@ -2,7 +2,7 @@ using backend.infrastructure.database;
 using backend.modules.budget.domain.entry;
 using backend.modules.budget.infrastructure.mappers;
 using backend.modules.shared.domain.valueObjects;
-
+using Model = backend.modules.budget.infrastructure.model.Entry;
 namespace backend.modules.budget.infrastructure.repository;
 
 public class EFEntryRepository: IEntryRepository
@@ -19,17 +19,27 @@ public class EFEntryRepository: IEntryRepository
 
     public void Save(Entry entry)
     {
-        var existingModel = _context.Entries.FirstOrDefault(e => e.Id == entry.Id.Value);
-        if (existingModel != null)
+        Model? model = entry.Id != null 
+            ? _context.Entries.FirstOrDefault(e => e.Id == entry.Id.Value)
+            : null;
+        if (model != null)
         {
             var updatedModel = _mapper.ToModel(entry);
-            _context.Entry(existingModel).CurrentValues.SetValues(updatedModel);
+            _context.Entry(model).CurrentValues.SetValues(updatedModel);
         }
         else
         {
-            _context.Entries.Add(_mapper.ToModel(entry));
+            model = _mapper.ToModel(entry);
+            _context.Entries.Add(model);
         }
+
         _context.SaveChanges();
+        if (entry.Id != null || model.Id == null)
+        {
+            return;
+        }
+
+        entry.SetId(new EntityId(model.Id.Value));
     }
 
     public void Delete(Entry entry)
