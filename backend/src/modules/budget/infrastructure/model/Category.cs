@@ -1,5 +1,3 @@
-using backend.modules.budget.domain.category;
-
 namespace backend.modules.budget.infrastructure.model;
 
 public class Category
