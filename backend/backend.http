@@ -1,12 +1,12 @@
 ###
 # Get all categories
 # @name getAllCategories
-GET http://localhost:5010/api/Categories
+GET http://localhost:5010/api/Categories/2024-01-01/2026-02-02
 
 ###
 # Get category by ID
 # @name getCategoryById
-GET http://localhost:5010/api/Categories/1
+GET http://localhost:5010/api/Categories/5
 
 ###
 # Create a new category
@@ -21,11 +21,11 @@ Content-Type: application/json
 ###
 # Update a category
 # @name updateCategory
-PUT http://localhost:5010/api/Categories/1
+PUT http://localhost:5010/api/Categories/5
 Content-Type: application/json
 
 {
-  "id": 1,
+  "id": 5,
   "name": "Updated Category"
 }
 
@@ -62,7 +62,7 @@ Content-Type: application/json
 ###
 # Update an entry
 # @name updateEntry
-PUT http://localhost:5010/api/Entries/1
+PUT http://localhost:5010/api/Entries/9
 Content-Type: application/json
 
 {
@@ -78,4 +78,9 @@ Content-Type: application/json
 # Delete an entry
 # @name deleteEntry
 DELETE http://localhost:5010/api/Entries/1
+
+###
+# Get entries summary
+# @name getEntriesSummary
+GET http://localhost:5010/api/Entries/summary?dateFrom=2024-01-01&dateTo=2026-01-31
 

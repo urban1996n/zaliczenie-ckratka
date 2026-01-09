@@ -1,4 +1,5 @@
 using backend.infrastructure.http.controller.dto;
+using backend.modules.budget.domain.calculator;
 using backend.modules.budget.domain.category;
 using Microsoft.AspNetCore.Mvc;
 using backend.modules.budget.domain.entry;
@@ -15,12 +16,14 @@ namespace backend.infrastructure.http.controller
         private readonly IEntryRepository _entryRepository;
         private readonly EntryMapper _entryMapper;
         private readonly ICategoryRepository _categoryRepository;
+        private readonly IBudgetCalculator _budgetCalculator;
 
-        public EntriesController(IEntryRepository entryRepository, EntryMapper entryMapper, ICategoryRepository categoryRepository)
+        public EntriesController(IEntryRepository entryRepository, EntryMapper entryMapper, ICategoryRepository categoryRepository, IBudgetCalculator budgetCalculator)
         {
             _entryRepository = entryRepository;
             _entryMapper = entryMapper;
             _categoryRepository = categoryRepository;
+            _budgetCalculator = budgetCalculator;
         }
 
         [HttpGet]
@@ -105,6 +108,22 @@ namespace backend.infrastructure.http.controller
 
             _entryRepository.Delete(entryToDelete);
             return NoContent();
+        }
+
+        [HttpGet("summary")]
+        public IActionResult GetSummary(
+            [FromQuery] DateTime dateFrom,
+            [FromQuery] DateTime dateTo)
+        {
+            if (dateFrom > dateTo)
+                return BadRequest("dateFrom cannot be later than dateTo");
+            
+            var entries = _entryRepository.FindAllWithinDateRange(dateFrom, dateTo);
+            var summary = new Summary();
+            summary.Entries = entries;
+            summary.Value = _budgetCalculator.Calculate(entries);
+            
+            return Ok(summary);
         }
     }
 }

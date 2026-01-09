@@ -4,7 +4,7 @@ namespace backend.modules.budget.domain.calculator;
 
 public class PrimitiveBudgetCalculator: IBudgetCalculator
 {
-    public int Calculate(Entry[] entries)
+    public int Calculate(IEnumerable<Entry> entries)
     {
         int BudgetValue = 0;
         

@@ -4,5 +4,5 @@ namespace backend.modules.budget.domain.calculator;
 
 public interface IBudgetCalculator
 {
-    public int Calculate(Entry[] entry);
+    public int Calculate(IEnumerable<Entry> entry);
 }
