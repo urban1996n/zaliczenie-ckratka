@@ -7,7 +7,7 @@ task is to **build a frontend application in React (Vite)** that
 communicates with an existing **ASP.NET Core Web API backend**.
 
 Backend: - runs locally at `http://localhost:5000` - exposes endpoints
-under `/api/*` - example endpoint: `GET /api/health`
+under `*` - example endpoint: `GET health`
 
 ------------------------------------------------------------------------
 
@@ -108,21 +108,21 @@ interface MonthlySummary {
 
 ### Categories
 
--   `GET /api/Categories`
--   `GET /api/Categories/{id}`
--   `POST /api/Categories`
--   `PUT /api/Categories/{id}`
--   `DELETE /api/Categories/{id}`
+-   `GET Categories`
+-   `GET Categories/{id}`
+-   `POST Categories`
+-   `PUT Categories/{id}`
+-   `DELETE Categories/{id}`
 
 ------------------------------------------------------------------------
 
 ### Entries
 
--   `GET /api/Entries`
--   `GET /api/Entries/{id}`
--   `POST /api/Entries`
--   `PUT /api/Entries/{id}`
--   `DELETE /api/Entries/{id}`
+-   `GET Entries`
+-   `GET Entries/{id}`
+-   `POST Entries`
+-   `PUT Entries/{id}`
+-   `DELETE Entries/{id}`
 
 ------------------------------------------------------------------------
 
@@ -239,7 +239,7 @@ UI
 
 1.  The application displays:
     -   application title
-    -   backend status (`/api/health`)
+    -   backend status (`health`)
 2.  Handles:
     -   loading states
     -   error states
