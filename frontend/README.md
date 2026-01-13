@@ -1,9 +1,4 @@
-
-  # Grocery Shopping App
-
-  This is a code bundle for Grocery Shopping App. The original project is available at https://www.figma.com/design/DLwiADGaTJ0K9cFscRfiyf/Grocery-Shopping-App.
-
-  ## Running the code
+ ## Running the code
 
   Run `npm i` to install the dependencies.
 
