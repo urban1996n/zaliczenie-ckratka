@@ -1,9 +1,14 @@
+using System.Text;
 using backend.infrastructure.database;
 using backend.modules.budget.domain.calculator;
 using backend.modules.budget.domain.category;
 using backend.modules.budget.domain.entry;
 using backend.modules.budget.infrastructure.mapper;
 using backend.modules.budget.infrastructure.repository;
+using backend.modules.user.domain;
+using backend.modules.user.infrastructure;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +24,27 @@ builder.Services.AddScoped<ICategoryRepository, EFCategoryRepository>(
     provider => new EFCategoryRepository(provider.GetService<DefaultDatabaseContext>()!, provider.GetService<CategoryMapper>()!)
 );
 builder.Services.AddScoped<IBudgetCalculator, PrimitiveBudgetCalculator>();
+builder.Services.AddScoped<IUserRepository, EFUserRepository>();
+builder.Services.AddScoped<PasswordManager, PasswordManager>();
+builder.Services.AddScoped<AuthService, AuthService>();
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+    };
+});
 
 builder.Services.AddCors(options =>
 {
@@ -28,6 +54,7 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod());
 });
 builder.Services.AddControllers();
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
@@ -39,9 +66,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors();
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllers();
-
-app.Run();
-app.UseHttpsRedirection();
 
 app.Run();

@@ -7,5 +7,5 @@ namespace backend.infrastructure.http.controller;
 public class HealthController : ControllerBase
 {
     [HttpGet]
-    public IActionResult Get() => Ok("API działa");
+    public IActionResult Get() => Ok();
 }

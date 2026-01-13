@@ -1,4 +1,5 @@
 using backend.modules.budget.infrastructure.model;
+using backend.modules.user.domain;
 
 namespace backend.infrastructure.database;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,7 @@ public class DefaultDatabaseContext : DbContext
 {
     public DbSet<Category> Categories { get; set; }
     public DbSet<Entry> Entries { get; set; }
+    public DbSet<User> Users { get; set; }
 
     public string DbPath { get; }
 
