@@ -1,4 +1,4 @@
 export enum EntryType {
-  INCOME = 0,
-  EXPENSE = 1,
+  INCOME = 1,
+  EXPENSE = -1,
 }

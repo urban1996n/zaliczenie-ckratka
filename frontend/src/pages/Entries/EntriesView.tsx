@@ -3,11 +3,10 @@ import type { Entry } from '../../types/Entry';
 import type { Category } from '../../types/Category';
 import { EntryType } from '../../types/EntryType';
 import { EntryModal } from '../../components/Entries/EntryModal';
+import { withLoader } from '../../components/common/withLoader';
 
 interface EntriesViewProps {
   entries: Entry[];
-  loading: boolean;
-  error: Error | null;
   onPrevMonth: () => void;
   onNextMonth: () => void;
   onDelete: (id: number) => void;
@@ -20,10 +19,8 @@ interface EntriesViewProps {
   categories: Category[];
 }
 
-export const EntriesView: FC<EntriesViewProps> = ({
+const EntriesView: FC<EntriesViewProps> = ({
   entries,
-  loading,
-  error,
   onPrevMonth,
   onNextMonth,
   onDelete,
@@ -35,14 +32,6 @@ export const EntriesView: FC<EntriesViewProps> = ({
   selectedEntry,
   categories,
 }) => {
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error.message}</div>;
-  }
-
   return (
     <div>
       <h2>Entries for {currentDate.toLocaleString('default', { month: 'long', year: 'numeric' })}</h2>
@@ -91,3 +80,5 @@ export const EntriesView: FC<EntriesViewProps> = ({
     </div>
   );
 };
+
+export default withLoader(EntriesView);

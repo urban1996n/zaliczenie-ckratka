@@ -1,7 +1,7 @@
 import { type FC, useEffect, useState } from 'react';
 import { useEntries } from '../../hooks/useEntries';
 import { useCategories } from '../../hooks/useCategories';
-import { EntriesView } from './EntriesView';
+import EntriesView from './EntriesView';
 import type { Entry } from '../../types/Entry';
 
 export const Entries: FC = () => {

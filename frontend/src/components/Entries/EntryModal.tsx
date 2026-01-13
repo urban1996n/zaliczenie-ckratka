@@ -3,6 +3,7 @@ import { useState } from 'react';
 import type { Entry } from '../../types/Entry';
 import type { Category } from '../../types/Category';
 import { EntryType } from '../../types/EntryType';
+import { Modal } from '../common/Modal';
 
 interface EntryModalProps {
   isOpen: boolean;
@@ -29,55 +30,45 @@ export const EntryModal: FC<EntryModalProps> = ({ isOpen, onClose, onSubmit, ent
     onClose();
   };
 
-  if (!isOpen) {
-    return null;
-  }
-
   return (
-    <div className="modal">
-      <div className="modal-content">
-        <span className="close" onClick={onClose}>
-          &times;
-        </span>
-        <form onSubmit={handleSubmit}>
-          <h2>{entry ? 'Edit Entry' : 'Add Entry'}</h2>
-          <label>
-            Name:
-            <input type="text" value={name} onChange={(e) => setName(e.target.value)} required />
-          </label>
-          <label>
-            Description:
-            <input type="text" value={description} onChange={(e) => setDescription(e.target.value)} />
-          </label>
-          <label>
-            Value:
-            <input type="number" value={value} onChange={(e) => setValue(Number(e.target.value))} required />
-          </label>
-          <label>
-            Type:
-            <select value={type} onChange={(e) => setType(Number(e.target.value) as EntryType)}>
-              <option value={EntryType.INCOME}>Income</option>
-              <option value={EntryType.EXPENSE}>Expense</option>
-            </select>
-          </label>
-          <label>
-            Category:
-            <select value={categoryId || ''} onChange={(e) => setCategoryId(Number(e.target.value))}>
-              <option value="">Select a category</option>
-              {categories.map((category) => (
-                <option key={category.id.value} value={category.id.value}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            Entry Date:
-            <input type="date" value={entryDate} onChange={(e) => setEntryDate(e.target.value)} required />
-          </label>
-          <button type="submit">{entry ? 'Update' : 'Add'}</button>
-        </form>
-      </div>
-    </div>
+    <Modal isOpen={isOpen} onClose={onClose} title={entry ? 'Edit Entry' : 'Add Entry'}>
+      <form onSubmit={handleSubmit}>
+        <label>
+          Name:
+          <input type="text" value={name} onChange={(e) => setName(e.target.value)} required />
+        </label>
+        <label>
+          Description:
+          <input type="text" value={description} onChange={(e) => setDescription(e.target.value)} />
+        </label>
+        <label>
+          Value:
+          <input type="number" value={value} onChange={(e) => setValue(Number(e.target.value))} required />
+        </label>
+        <label>
+          Type:
+          <select value={type} onChange={(e) => setType(Number(e.target.value) as EntryType)}>
+            <option value={EntryType.INCOME}>Income</option>
+            <option value={EntryType.EXPENSE}>Expense</option>
+          </select>
+        </label>
+        <label>
+          Category:
+          <select value={categoryId || ''} onChange={(e) => setCategoryId(Number(e.target.value))}>
+            <option value="">Select a category</option>
+            {categories.map((category) => (
+              <option key={category.id.value} value={category.id.value}>
+                {category.name}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Entry Date:
+          <input type="date" value={entryDate} onChange={(e) => setEntryDate(e.target.value)} required />
+        </label>
+        <button type="submit">{entry ? 'Update' : 'Add'}</button>
+      </form>
+    </Modal>
   );
 };

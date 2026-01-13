@@ -1,22 +1,13 @@
 import type { FC } from 'react';
 import type { MonthlySummary } from '../../types/MonthlySummary';
 import { EntryType } from '../../types/EntryType';
+import { withLoader } from '../../components/common/withLoader';
 
 interface DashboardViewProps {
   summary: MonthlySummary | null;
-  loading: boolean;
-  error: Error | null;
 }
 
-export const DashboardView: FC<DashboardViewProps> = ({ summary, loading, error }) => {
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error.message}</div>;
-  }
-
+const DashboardView: FC<DashboardViewProps> = ({ summary }) => {
   if (!summary) {
     return <div>No summary data</div>;
   }
@@ -64,3 +55,5 @@ export const DashboardView: FC<DashboardViewProps> = ({ summary, loading, error 
     </div>
   );
 };
+
+export default withLoader(DashboardView);

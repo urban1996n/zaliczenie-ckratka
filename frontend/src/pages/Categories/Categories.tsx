@@ -1,7 +1,7 @@
 import type { FC } from 'react';
 import { useEffect, useState } from 'react';
 import { useCategories } from '../../hooks/useCategories';
-import { CategoriesView } from './CategoriesView';
+import CategoriesView from './CategoriesView';
 import type { Category } from '../../types/Category';
 
 export const Categories: FC = () => {

@@ -1,11 +1,10 @@
 import type { FC } from 'react';
 import type { Category } from '../../types/Category';
 import { CategoryModal } from '../../components/Categories/CategoryModal';
+import { withLoader } from '../../components/common/withLoader';
 
 interface CategoriesViewProps {
   categories: Category[];
-  loading: boolean;
-  error: Error | null;
   onDelete: (id: number) => void;
   onOpenModal: (category?: Category) => void;
   onCloseModal: () => void;
@@ -14,10 +13,8 @@ interface CategoriesViewProps {
   selectedCategory: Category | null;
 }
 
-export const CategoriesView: FC<CategoriesViewProps> = ({
+const CategoriesView: FC<CategoriesViewProps> = ({
   categories,
-  loading,
-  error,
   onDelete,
   onOpenModal,
   onCloseModal,
@@ -25,14 +22,6 @@ export const CategoriesView: FC<CategoriesViewProps> = ({
   isModalOpen,
   selectedCategory,
 }) => {
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error.message}</div>;
-  }
-
   return (
     <div>
       <h2>Categories</h2>
@@ -68,3 +57,5 @@ export const CategoriesView: FC<CategoriesViewProps> = ({
     </div>
   );
 };
+
+export default withLoader(CategoriesView);

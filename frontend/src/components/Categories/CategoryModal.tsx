@@ -1,6 +1,7 @@
 import type { FC } from 'react';
 import { useState } from 'react';
 import type { Category } from '../../types/Category';
+import { Modal } from '../common/Modal';
 
 interface CategoryModalProps {
   isOpen: boolean;
@@ -18,25 +19,15 @@ export const CategoryModal: FC<CategoryModalProps> = ({ isOpen, onClose, onSubmi
     onClose();
   };
 
-  if (!isOpen) {
-    return null;
-  }
-
   return (
-    <div className="modal">
-      <div className="modal-content">
-        <span className="close" onClick={onClose}>
-          &times;
-        </span>
-        <form onSubmit={handleSubmit}>
-          <h2>{category ? 'Edit Category' : 'Add Category'}</h2>
-          <label>
-            Name:
-            <input type="text" value={name} onChange={(e) => setName(e.target.value)} required />
-          </label>
-          <button type="submit">{category ? 'Update' : 'Add'}</button>
-        </form>
-      </div>
-    </div>
+    <Modal isOpen={isOpen} onClose={onClose} title={category ? 'Edit Category' : 'Add Category'}>
+      <form onSubmit={handleSubmit}>
+        <label>
+          Name:
+          <input type="text" value={name} onChange={(e) => setName(e.target.value)} required />
+        </label>
+        <button type="submit">{category ? 'Update' : 'Add'}</button>
+      </form>
+    </Modal>
   );
 };

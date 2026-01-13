@@ -1,5 +1,5 @@
 import type { Category } from './Category';
-import { EntryType } from './EntryType';
+import type { EntryType } from './EntryType';
 
 export interface Entry {
   id: {
@@ -12,5 +12,5 @@ export interface Entry {
   category: Category | null;
   entryDate: string;
   createdAt: string;
-  updatedAt: string | null;
+  updatedAt: string;
 }

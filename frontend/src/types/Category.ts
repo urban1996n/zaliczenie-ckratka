@@ -4,5 +4,5 @@ export interface Category {
   };
   name: string;
   createdAt: string;
-  updatedAt: string | null;
+  updatedAt: string;
 }
