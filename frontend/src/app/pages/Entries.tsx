@@ -3,21 +3,25 @@ import { EntriesView } from './EntriesView';
 import { useEntries } from 'hooks/useEntries';
 import { useCategories } from 'hooks/useCategories';
 import type { Entry } from 'types/Entry';
+import { useMonthlySummary } from 'hooks/useMonthlySummary.ts';
 
 export const Entries: FC = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedEntry, setSelectedEntry] = useState<Entry | null>(null);
+  const { fetchSummary, summary } = useMonthlySummary(
+    currentDate.getFullYear(),
+    currentDate.getMonth()
+  );
 
   const {
-    entries,
     loading: entriesLoading,
     error: entriesError,
-    fetchEntries,
     addEntry,
     editEntry,
     removeEntry,
   } = useEntries();
+
   const {
     categories,
     loading: categoriesLoading,
@@ -26,17 +30,9 @@ export const Entries: FC = () => {
   } = useCategories();
 
   useEffect(() => {
-    fetchEntries();
+    fetchSummary();
     fetchCategories();
-  }, [fetchEntries, fetchCategories]);
-
-  const filteredEntries = entries.filter((entry) => {
-    const entryDate = new Date(entry.entryDate);
-    return (
-      entryDate.getFullYear() === currentDate.getFullYear() &&
-      entryDate.getMonth() === currentDate.getMonth()
-    );
-  });
+  }, [fetchSummary, fetchCategories]);
 
   const handlePrevMonth = () => {
     setCurrentDate((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
@@ -49,6 +45,7 @@ export const Entries: FC = () => {
   const handleDelete = async (id: number) => {
     if (window.confirm('Are you sure you want to delete this entry?')) {
       await removeEntry(id);
+      fetchSummary();
     }
   };
 
@@ -68,6 +65,8 @@ export const Entries: FC = () => {
     } else {
       await addEntry(entryData);
     }
+
+    fetchSummary();
     handleCloseModal();
   };
 
@@ -76,7 +75,7 @@ export const Entries: FC = () => {
 
   return (
     <EntriesView
-      entries={filteredEntries}
+      entries={summary?.entries ?? []}
       loading={loading}
       error={error}
       onPrevMonth={handlePrevMonth}

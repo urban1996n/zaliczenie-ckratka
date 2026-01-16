@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { getMonthlySummary } from '../api/monthlySummary';
 import type { MonthlySummary } from '../types/MonthlySummary';
 
@@ -7,10 +7,13 @@ export const useMonthlySummary = (year: number, month: number) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
 
+  const summariedMonth = useMemo(() => new Date(year, month, 1), [year, month]);
+  const nextMonth = useMemo(() => new Date(year, month + 1, -1), [year, month]);
+
   const fetchSummary = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await getMonthlySummary(year, month);
+      const data = await getMonthlySummary(summariedMonth, nextMonth);
       setSummary(data);
     } catch (err) {
       setError(err as Error);

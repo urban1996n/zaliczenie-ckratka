@@ -21,6 +21,7 @@ export const useEntries = () => {
 
   const addEntry = async (entry: Omit<Entry, 'id' | 'createdAt' | 'updatedAt'>) => {
     setLoading(true);
+
     try {
       const newEntry = await createEntry(entry);
       setEntries((prevEntries) => [...prevEntries, newEntry]);

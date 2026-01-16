@@ -56,9 +56,10 @@ export const EntryModal: FC<EntryModalProps> = ({
       value: finalValue,
       type,
       category,
-      entryDate: new Date(entryDate).toISOString(),
+      entryDate,
     });
 
+    console.log({ entryDate });
     setName('');
     setDescription('');
     setValue(0);
@@ -180,6 +181,8 @@ export const EntryModal: FC<EntryModalProps> = ({
                   type="date"
                   value={entryDate}
                   onChange={(e) => setEntryDate(e.target.value)}
+                  onBlur={(e) => setEntryDate(e.target.value)}
+                  onInput={(e) => setEntryDate(e?.target?.value)}
                   required
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
                 />
