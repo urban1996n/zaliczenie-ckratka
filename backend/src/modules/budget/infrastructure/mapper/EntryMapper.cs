@@ -70,7 +70,8 @@ public class EntryMapper
             UpdatedAt = domain.UpdatedAt,
             Category = category,
             Value = domain.Value,
-            Type = domain.Type
+            Type = domain.Type,
+            EntryDate = domain.EntryDate
         };
     }
 }

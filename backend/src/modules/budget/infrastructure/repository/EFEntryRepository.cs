@@ -55,7 +55,7 @@ public class EFEntryRepository: IEntryRepository
     public IEnumerable<Entry> FindAllWithinDateRange(DateTime startDate, DateTime endDate)
     {
         return _context.Entries
-            .Where(e => e.CreatedAt >= startDate && e.CreatedAt <= endDate)
+            .Where(e => e.EntryDate >= startDate && e.EntryDate <= endDate)
             .Select(e => _mapper.ToDomain(e))
             .ToList();
     }
