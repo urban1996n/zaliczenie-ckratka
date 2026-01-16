@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect, useMemo, useCallback, useContext } from 'react';
+import { createContext, useState, useEffect, useMemo, useCallback } from 'react';
 import type { ReactNode } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import {
@@ -9,6 +9,7 @@ import {
   getStoredRefreshToken,
 } from '../api/auth';
 import type { User } from '../types/Auth';
+import { useNavigate } from 'react-router-dom';
 
 interface AuthContextType {
   user: User | null;
@@ -28,6 +29,7 @@ interface AuthProviderProps {
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const navigate = useNavigate();
 
   const updateUserFromToken = useCallback(() => {
     const token = getStoredToken();
@@ -56,6 +58,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     async (data: unknown) => {
       await apiLogin(data);
       updateUserFromToken();
+      navigate('/dashboard');
     },
     [updateUserFromToken]
   );
