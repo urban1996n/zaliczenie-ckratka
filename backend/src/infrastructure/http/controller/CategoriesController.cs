@@ -62,11 +62,6 @@ namespace backend.infrastructure.http.controller
                 return BadRequest(ModelState);
             }
 
-            if (category.Id != id)
-            {
-                return BadRequest("Category ID in the body does not match the route ID.");
-            }
-
             var existingCategory = _categoryRepository.FindById(new EntityId(id));
             if (existingCategory == null)
             {

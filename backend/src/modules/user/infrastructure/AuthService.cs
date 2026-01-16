@@ -21,7 +21,7 @@ public class AuthService
         _userRepository = userRepository;
     }
 
-    public string GenerateAccessToken(User user)
+    public Token GenerateAccessToken(User user)
     {
         var claims = new[]
         {
@@ -41,7 +41,9 @@ public class AuthService
             signingCredentials: creds
         );
 
-        return new JwtSecurityTokenHandler().WriteToken(token);
+        var tokenString = new JwtSecurityTokenHandler().WriteToken(token); 
+        
+        return new Token(tokenString, expires);
     }
 
     public string GenerateRefreshToken()
@@ -59,3 +61,5 @@ public class AuthService
         await _userRepository.Update(user);
     }
 }
+
+public record Token(string token, DateTime ExpiryTime);

@@ -54,7 +54,7 @@ public class AuthController : ControllerBase
         var refreshToken = _authService.GenerateRefreshToken();
         await _authService.SetRefreshToken(user, refreshToken);
 
-        return Ok(new { Token = accessToken, RefreshToken = refreshToken });
+        return Ok(new { Token = accessToken.token, RefreshToken = refreshToken, expiresAt = accessToken.ExpiryTime.ToString("O")});
     }
 
     [HttpPost("refresh")]
