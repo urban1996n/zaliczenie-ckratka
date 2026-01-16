@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using backend.modules.user.domain;
 
 namespace backend.modules.user.infrastructure;
 
@@ -17,5 +18,15 @@ public class InMemoryUserRepository : user.domain.IUserRepository
     {
         _users.Add(user);
         return Task.CompletedTask;
+    }
+
+    public Task Update(domain.User user)
+    {
+        return Task.CompletedTask;
+    }
+
+    public Task<User?> GetByRefreshToken(string refreshToken)
+    {
+        return new Task<User?>(() => _users.FirstOrDefault(u => u.RefreshToken == refreshToken));
     }
 }

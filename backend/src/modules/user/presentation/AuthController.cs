@@ -50,11 +50,30 @@ public class AuthController : ControllerBase
             return Unauthorized("Invalid credentials.");
         }
 
-        var token = _authService.GenerateJwtToken(user);
+        var accessToken = _authService.GenerateAccessToken(user);
+        var refreshToken = _authService.GenerateRefreshToken();
+        await _authService.SetRefreshToken(user, refreshToken);
 
-        return Ok(new { Token = token });
+        return Ok(new { Token = accessToken, RefreshToken = refreshToken });
+    }
+
+    [HttpPost("refresh")]
+    public async Task<IActionResult> Refresh([FromBody] RefreshTokenDto refreshTokenDto)
+    {
+        var user = await _userRepository.GetByRefreshToken(refreshTokenDto.RefreshToken);
+        if (user == null || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
+        {
+            return Unauthorized("Invalid refresh token.");
+        }
+
+        var newAccessToken = _authService.GenerateAccessToken(user);
+        var newRefreshToken = _authService.GenerateRefreshToken();
+        await _authService.SetRefreshToken(user, newRefreshToken);
+
+        return Ok(new { Token = newAccessToken, RefreshToken = newRefreshToken });
     }
 }
 
 public record RegisterDto(string Email, string Password);
 public record LoginDto(string Email, string Password);
+public record RefreshTokenDto(string RefreshToken);

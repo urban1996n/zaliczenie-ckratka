@@ -68,7 +68,7 @@ namespace backend.infrastructure.http.controller
             var newEntry = new Entry(entry.Value, category, DateTime.UtcNow, entry.Name, entry.Description, entry.Type, entry.Date);
             _entryRepository.Save(newEntry);
 
-            return CreatedAtAction(nameof(GetEntryById), new { id = newEntry.Id.Value }, newEntry);
+            return CreatedAtAction(nameof(GetEntryById), new { id = newEntry?.Id?.Value }, newEntry);
         }
 
         [HttpPut("{id}")]
