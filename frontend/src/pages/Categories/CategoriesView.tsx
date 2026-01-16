@@ -1,6 +1,6 @@
 import type { FC } from 'react';
 import type { Category } from '../../types/Category';
-import { CategoryModal } from '../../components/Categories/CategoryModal';
+import { CategoryModal } from 'components/Categories/CategoryModal';
 import { withLoader } from '../../components/common/withLoader';
 
 interface CategoriesViewProps {
