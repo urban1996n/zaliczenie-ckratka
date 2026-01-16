@@ -1,7 +1,13 @@
 {
   "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
-  ]
+  "references": [{ "path": "./tsconfig.app.json" }, { "path": "./tsconfig.node.json" }],
+  "compilerOptions": {
+    "paths": {
+      "app/*": ["./src/app/*"],
+      "types/*": ["./src/types/*"],
+      "hooks/*": ["./src/hooks/*"]
+    },
+    "moduleResolution": "bundler",
+    "module": "ESNext"
+  }
 }

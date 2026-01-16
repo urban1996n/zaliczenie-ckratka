@@ -1,6 +1,6 @@
 import type { FC } from 'react';
-import type { MonthlySummary } from '@/types/MonthlySummary';
-import { EntryType } from '@/types/EntryType';
+import type { MonthlySummary } from 'types/MonthlySummary';
+import { EntryType } from 'types/EntryType';
 import { TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
 
 interface DashboardViewProps {
@@ -40,14 +40,14 @@ export const DashboardView: FC<DashboardViewProps> = ({ summary, loading, error 
   const expense = summary.entries
     .filter((e) => e.type === EntryType.EXPENSE)
     .reduce((acc, e) => acc + Math.abs(e.value), 0);
-  
+
   const total = income - expense;
   const incomePercentage = income + expense > 0 ? (income / (income + expense)) * 100 : 50;
 
   return (
     <div className="space-y-8">
       <h2 className="text-3xl">Dashboard</h2>
-      
+
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500">

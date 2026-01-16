@@ -1,8 +1,8 @@
 import type { FC, FormEvent } from 'react';
 import { useState, useEffect } from 'react';
-import type { Entry } from '@/types/Entry';
-import type { Category } from '@/types/Category';
-import { EntryType } from '@/types/EntryType';
+import type { Entry } from 'types/Entry';
+import type { Category } from 'types/Category';
+import { EntryType } from 'types/EntryType';
 import { X } from 'lucide-react';
 
 interface EntryModalProps {
@@ -13,7 +13,13 @@ interface EntryModalProps {
   categories: Category[];
 }
 
-export const EntryModal: FC<EntryModalProps> = ({ isOpen, onClose, onSubmit, entry, categories }) => {
+export const EntryModal: FC<EntryModalProps> = ({
+  isOpen,
+  onClose,
+  onSubmit,
+  entry,
+  categories,
+}) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [value, setValue] = useState(0);
@@ -43,7 +49,7 @@ export const EntryModal: FC<EntryModalProps> = ({ isOpen, onClose, onSubmit, ent
     e.preventDefault();
     const category = categories.find((c) => c.id.value === categoryId) || null;
     const finalValue = type === EntryType.INCOME ? value : -value;
-    
+
     onSubmit({
       name,
       description,
@@ -52,7 +58,7 @@ export const EntryModal: FC<EntryModalProps> = ({ isOpen, onClose, onSubmit, ent
       category,
       entryDate: new Date(entryDate).toISOString(),
     });
-    
+
     setName('');
     setDescription('');
     setValue(0);
@@ -69,7 +75,10 @@ export const EntryModal: FC<EntryModalProps> = ({ isOpen, onClose, onSubmit, ent
     <div className="fixed inset-0 z-50 overflow-y-auto">
       <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
         {/* Background overlay */}
-        <div className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" onClick={onClose} />
+        <div
+          className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75"
+          onClick={onClose}
+        />
 
         {/* Modal content */}
         <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">

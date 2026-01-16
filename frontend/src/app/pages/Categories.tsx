@@ -1,16 +1,22 @@
-import { FC, useState } from 'react';
+import { type FC, useState, useEffect } from 'react';
 import { CategoriesView } from './CategoriesView';
-import { mockCategories } from '@/data/mockData';
-import type { Category } from '@/types/Category';
+import { useCategories } from 'hooks/useCategories';
+import type { Category } from 'types/Category';
 
 export const Categories: FC = () => {
-  const [categories, setCategories] = useState(mockCategories);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
 
-  const handleDelete = (id: number) => {
+  const { categories, loading, error, fetchCategories, addCategory, editCategory, removeCategory } =
+    useCategories();
+
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
+
+  const handleDelete = async (id: number) => {
     if (window.confirm('Are you sure you want to delete this category?')) {
-      setCategories((prev) => prev.filter((category) => category.id.value !== id));
+      await removeCategory(id);
     }
   };
 
@@ -24,37 +30,20 @@ export const Categories: FC = () => {
     setSelectedCategory(null);
   };
 
-  const handleSubmit = (categoryData: Omit<Category, 'id' | 'createdAt' | 'updatedAt'>) => {
+  const handleSubmit = async (categoryData: Omit<Category, 'id' | 'createdAt' | 'updatedAt'>) => {
     if (selectedCategory) {
-      // Update existing category
-      setCategories((prev) =>
-        prev.map((category) =>
-          category.id.value === selectedCategory.id.value
-            ? {
-                ...category,
-                ...categoryData,
-                updatedAt: new Date().toISOString(),
-              }
-            : category
-        )
-      );
+      await editCategory(selectedCategory.id.value, categoryData);
     } else {
-      // Create new category
-      const newCategory: Category = {
-        ...categoryData,
-        id: { value: Math.max(...categories.map((c) => c.id.value), 0) + 1 },
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-      setCategories((prev) => [...prev, newCategory]);
+      await addCategory(categoryData);
     }
+    handleCloseModal();
   };
 
   return (
     <CategoriesView
       categories={categories}
-      loading={false}
-      error={null}
+      loading={loading}
+      error={error}
       onDelete={handleDelete}
       onOpenModal={handleOpenModal}
       onCloseModal={handleCloseModal}

@@ -1,13 +1,34 @@
-import { FC, useState } from 'react';
+import { type FC, useState, useEffect } from 'react';
 import { EntriesView } from './EntriesView';
-import { mockCategories, mockEntries } from '@/data/mockData';
-import type { Entry } from '@/types/Entry';
+import { useEntries } from 'hooks/useEntries';
+import { useCategories } from 'hooks/useCategories';
+import type { Entry } from 'types/Entry';
 
 export const Entries: FC = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedEntry, setSelectedEntry] = useState<Entry | null>(null);
-  const [entries, setEntries] = useState(mockEntries);
+
+  const {
+    entries,
+    loading: entriesLoading,
+    error: entriesError,
+    fetchEntries,
+    addEntry,
+    editEntry,
+    removeEntry,
+  } = useEntries();
+  const {
+    categories,
+    loading: categoriesLoading,
+    error: categoriesError,
+    fetchCategories,
+  } = useCategories();
+
+  useEffect(() => {
+    fetchEntries();
+    fetchCategories();
+  }, [fetchEntries, fetchCategories]);
 
   const filteredEntries = entries.filter((entry) => {
     const entryDate = new Date(entry.entryDate);
@@ -25,9 +46,9 @@ export const Entries: FC = () => {
     setCurrentDate((prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = async (id: number) => {
     if (window.confirm('Are you sure you want to delete this entry?')) {
-      setEntries((prev) => prev.filter((entry) => entry.id.value !== id));
+      await removeEntry(id);
     }
   };
 
@@ -41,37 +62,23 @@ export const Entries: FC = () => {
     setSelectedEntry(null);
   };
 
-  const handleSubmit = (entryData: Omit<Entry, 'id' | 'createdAt' | 'updatedAt'>) => {
+  const handleSubmit = async (entryData: Omit<Entry, 'id' | 'createdAt' | 'updatedAt'>) => {
     if (selectedEntry) {
-      // Update existing entry
-      setEntries((prev) =>
-        prev.map((entry) =>
-          entry.id.value === selectedEntry.id.value
-            ? {
-                ...entry,
-                ...entryData,
-                updatedAt: new Date().toISOString(),
-              }
-            : entry
-        )
-      );
+      await editEntry(selectedEntry.id.value, entryData);
     } else {
-      // Create new entry
-      const newEntry: Entry = {
-        ...entryData,
-        id: { value: Math.max(...entries.map((e) => e.id.value), 0) + 1 },
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-      setEntries((prev) => [...prev, newEntry]);
+      await addEntry(entryData);
     }
+    handleCloseModal();
   };
+
+  const loading = entriesLoading || categoriesLoading;
+  const error = entriesError || categoriesError;
 
   return (
     <EntriesView
       entries={filteredEntries}
-      loading={false}
-      error={null}
+      loading={loading}
+      error={error}
       onPrevMonth={handlePrevMonth}
       onNextMonth={handleNextMonth}
       onDelete={handleDelete}
@@ -81,7 +88,7 @@ export const Entries: FC = () => {
       onSubmit={handleSubmit}
       isModalOpen={isModalOpen}
       selectedEntry={selectedEntry}
-      categories={mockCategories}
+      categories={categories}
     />
   );
 };

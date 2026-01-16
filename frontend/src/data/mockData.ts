@@ -1,7 +1,7 @@
-import type { Category } from '@/types/Category';
-import type { Entry } from '@/types/Entry';
-import { EntryType } from '@/types/EntryType';
-import type { MonthlySummary } from '@/types/MonthlySummary';
+import type { Category } from 'types/Category';
+import type { Entry } from 'types/Entry';
+import { EntryType } from 'types/EntryType';
+import type { MonthlySummary } from 'types/MonthlySummary';
 
 export const mockCategories: Category[] = [
   {

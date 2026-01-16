@@ -1,6 +1,6 @@
 import type { FC, FormEvent } from 'react';
 import { useState, useEffect } from 'react';
-import type { Category } from '@/types/Category';
+import type { Category } from 'types/Category';
 import { X } from 'lucide-react';
 
 interface CategoryModalProps {
@@ -31,10 +31,11 @@ export const CategoryModal: FC<CategoryModalProps> = ({ isOpen, onClose, onSubmi
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
       <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-        {/* Background overlay */}
-        <div className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" onClick={onClose} />
+        <div
+          className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75"
+          onClick={onClose}
+        />
 
-        {/* Modal content */}
         <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
           <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
             <div className="flex items-start justify-between mb-4">
@@ -46,7 +47,7 @@ export const CategoryModal: FC<CategoryModalProps> = ({ isOpen, onClose, onSubmi
                 <X className="w-5 h-5" />
               </button>
             </div>
-            
+
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label htmlFor="category-name" className="block text-sm mb-2 text-gray-700">
