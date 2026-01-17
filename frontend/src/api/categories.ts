@@ -1,15 +1,16 @@
 import type { Category } from '../types/Category';
-import { httpClient } from './httpClient';
+import { HttpClient } from './httpClient';
 
-export const getCategories = async (): Promise<Category[]> => {
+export const getCategories = async (httpClient: HttpClient): Promise<Category[]> => {
   return httpClient.get<Category[]>('/Categories');
 };
 
-export const getCategory = async (id: number): Promise<Category> => {
+export const getCategory = async (httpClient: HttpClient, id: number): Promise<Category> => {
   return httpClient.get<Category>(`/Categories/${id}`);
 };
 
 export const createCategory = async (
+  httpClient: HttpClient,
   category: Omit<Category, 'id' | 'createdAt' | 'updatedAt'>
 ): Promise<Category> => {
   return httpClient.post<Category, Omit<Category, 'id' | 'createdAt' | 'updatedAt'>>(
@@ -19,6 +20,7 @@ export const createCategory = async (
 };
 
 export const updateCategory = async (
+  httpClient: HttpClient,
   id: number,
   category: Omit<Category, 'id' | 'createdAt' | 'updatedAt'>
 ): Promise<void> => {
@@ -28,6 +30,6 @@ export const updateCategory = async (
   );
 };
 
-export const deleteCategory = async (id: number): Promise<void> => {
+export const deleteCategory = async (httpClient: HttpClient, id: number): Promise<void> => {
   await httpClient.delete<void>(`/Categories/${id}`);
 };

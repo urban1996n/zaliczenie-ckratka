@@ -1,8 +1,10 @@
 import { useState, useCallback, useMemo } from 'react';
 import { getMonthlySummary } from '../api/monthlySummary';
 import type { MonthlySummary } from '../types/MonthlySummary';
+import { useHttpClient } from '../context/HttpClientContext.tsx';
 
 export const useMonthlySummary = (year: number, month: number) => {
+  const httpClient = useHttpClient();
   const [summary, setSummary] = useState<MonthlySummary | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
@@ -13,7 +15,7 @@ export const useMonthlySummary = (year: number, month: number) => {
   const fetchSummary = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await getMonthlySummary(summariedMonth, nextMonth);
+      const data = await getMonthlySummary(httpClient, summariedMonth, nextMonth);
       setSummary(data);
     } catch (err) {
       setError(err as Error);

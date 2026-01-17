@@ -7,6 +7,9 @@ import { AuthPage } from 'app/pages/Auth/AuthPage';
 import { AuthProvider } from '../context/AuthContext';
 import { ProtectedRoute } from './components/common/ProtectedRoute';
 import { useAuth } from 'hooks/useAuth.ts';
+import { LocalStorageTokenContainer } from '../api/localStorageTokenContainer.ts';
+import { useMemo } from 'react';
+import { HttpProvider } from '../context/HttpClientContext.tsx';
 
 const AppRoutes = () => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -53,11 +56,15 @@ const AppRoutes = () => {
 };
 
 export default function App() {
+  const tokenContainer = useMemo(() => new LocalStorageTokenContainer(), []);
+
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <AppRoutes />
-      </AuthProvider>
+      <HttpProvider tokenContainer={tokenContainer}>
+        <AuthProvider tokenContainer={tokenContainer}>
+          <AppRoutes />
+        </AuthProvider>
+      </HttpProvider>
     </BrowserRouter>
   );
 }
