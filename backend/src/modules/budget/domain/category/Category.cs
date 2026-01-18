@@ -1,4 +1,6 @@
 using backend.modules.shared.domain.valueObject;
+using backend.modules.user.domain;
+using System;
 
 namespace backend.modules.budget.domain.category;
 
@@ -8,13 +10,15 @@ public class Category
     public string Name { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime? UpdatedAt { get; private set; }
-    
-    public Category(EntityId id, string name, DateTime createdAt, DateTime? updatedAt)
+    public Guid? UserId { get; private set; } // Make UserId nullable in domain as well
+
+    public Category(EntityId id, string name, DateTime createdAt, DateTime? updatedAt, Guid? userId)
     {
         Id = id;
         Name = name;
         CreatedAt = createdAt;
         UpdatedAt = updatedAt;
+        UserId = userId;
     }
 
     public void SetName(string name)

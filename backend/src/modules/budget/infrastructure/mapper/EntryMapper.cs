@@ -25,6 +25,10 @@ public class EntryMapper
 
         if (model.Id == null)
         {
+            if (!model.UserId.HasValue)
+            {
+                throw new InvalidOperationException("Entry infrastructure model must have a UserId.");
+            }
             return new DomainEntry(
                 model.Value,
                 domainCategory,
@@ -32,10 +36,15 @@ public class EntryMapper
                 model.Name,
                 model.Description,
                 model.Type,
-                model.EntryDate
+                model.EntryDate,
+                model.UserId.Value
             );
         }
 
+        if (!model.UserId.HasValue)
+        {
+            throw new InvalidOperationException("Entry infrastructure model must have a UserId.");
+        }
         return new DomainEntry(
             new EntityId(model.Id.Value),
             (int)model.Value,
@@ -45,7 +54,8 @@ public class EntryMapper
             model.Name,
             model.Description,
             model.Type,
-            model.EntryDate
+            model.EntryDate,
+            model.UserId.Value
         );
     }
 
@@ -71,7 +81,8 @@ public class EntryMapper
             Category = category,
             Value = domain.Value,
             Type = domain.Type,
-            EntryDate = domain.EntryDate
+            EntryDate = domain.EntryDate,
+            UserId = domain.UserId
         };
     }
 }

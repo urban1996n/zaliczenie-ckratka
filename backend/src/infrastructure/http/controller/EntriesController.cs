@@ -6,11 +6,14 @@ using backend.modules.budget.domain.entry;
 using backend.modules.budget.infrastructure.mapper;
 using backend.modules.shared.domain.valueObject;
 using Model =  backend.modules.budget.infrastructure.model.Entry;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace backend.infrastructure.http.controller
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class EntriesController : ControllerBase
     {
         private readonly IEntryRepository _entryRepository;
@@ -26,9 +29,20 @@ namespace backend.infrastructure.http.controller
             _budgetCalculator = budgetCalculator;
         }
 
+        private Guid GetUserId()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                throw new InvalidOperationException("User is not authenticated.");
+            }
+            return Guid.Parse(userId);
+        }
+
         [HttpGet]
         public ActionResult<IEnumerable<Entry>> GetAllEntries(DateTime? startDate, DateTime? endDate)
         {
+            var userId = GetUserId();
             if (!startDate.HasValue)
             {
                 startDate = DateTime.MinValue;
@@ -38,16 +52,17 @@ namespace backend.infrastructure.http.controller
             {
                 endDate = DateTime.MaxValue;
             }
-            var entries = _entryRepository.FindAllWithinDateRange(startDate.Value, endDate.Value);
+            var entries = _entryRepository.FindAllWithinDateRange(startDate.Value, endDate.Value, userId);
             return Ok(entries);
         }
 
         [HttpGet("{id}")]
         public ActionResult<Entry> GetEntryById(int id)
         {
-            var entry = _entryRepository.FindById(new EntityId(id));
+            var userId = GetUserId();
+            var entry = _entryRepository.FindById(new EntityId(id), userId);
             
-            if (entry == null)
+            if (entry == null) // Ownership check is now handled by the repository
             {
                 return NotFound();
             }
@@ -62,11 +77,17 @@ namespace backend.infrastructure.http.controller
                 return BadRequest(ModelState);
             }
 
+            var userId = GetUserId();
             int? categoryId = entry.CategoryId;
             EntityId? entityId = categoryId.HasValue ? new EntityId(categoryId.Value) : null; 
-            var category =  entityId == null ? null : _categoryRepository.FindById(entityId);
-            var newEntry = new Entry(entry.Value, category, DateTime.UtcNow, entry.Name, entry.Description, entry.Type, DateTime.Parse(entry.EntryDate));
-            _entryRepository.Save(newEntry);
+            var category =  entityId == null ? null : _categoryRepository.FindById(entityId, userId); // Pass userId to category repository
+            // Ensure the category belongs to the user if it exists
+            if (category != null && category.UserId != userId)
+            {
+                return Forbid(); // Or BadRequest, depending on desired behavior
+            }
+            var newEntry = new Entry(entry.Value, category, DateTime.UtcNow, entry.Name, entry.Description, entry.Type, DateTime.Parse(entry.EntryDate), userId);
+            _entryRepository.Save(newEntry, userId);
 
             return CreatedAtAction(nameof(GetEntryById), new { id = newEntry?.Id?.Value }, newEntry);
         }
@@ -79,20 +100,28 @@ namespace backend.infrastructure.http.controller
                 return BadRequest(ModelState);
             }
 
-            var existingEntry = _entryRepository.FindById(new EntityId(id));
+            var userId = GetUserId();
+            // The repository will handle finding and checking ownership
+            var existingEntry = _entryRepository.FindById(new EntityId(id), userId);
             if (existingEntry == null)
             {
                 return NotFound();
             }
 
-            var category = entry.CategoryId == null ? null : _categoryRepository.FindById(new EntityId(entry.CategoryId.Value));
+            var category = entry.CategoryId == null ? null : _categoryRepository.FindById(new EntityId(entry.CategoryId.Value), userId); // Pass userId to category repository
+            // Ensure the category belongs to the user if it exists
+            if (category != null && category.UserId != userId)
+            {
+                return Forbid(); // Or BadRequest, depending on desired behavior
+            }
+
             existingEntry.SetValue(entry.Value);
             existingEntry.SetCategory(category);
             existingEntry.SetName(entry.Name);
             existingEntry.SetDescription(entry.Description);
             existingEntry.SetType(entry.Type);
             existingEntry.SetEntryDate(DateTime.Parse(entry.EntryDate));
-            _entryRepository.Save(existingEntry); 
+            _entryRepository.Save(existingEntry, userId); 
 
             return NoContent();
         }
@@ -100,13 +129,15 @@ namespace backend.infrastructure.http.controller
         [HttpDelete("{id}")]
         public IActionResult DeleteEntry(int id)
         {
-            var entryToDelete = _entryRepository.FindById(new EntityId(id));
+            var userId = GetUserId();
+            // The repository will handle finding and checking ownership
+            var entryToDelete = _entryRepository.FindById(new EntityId(id), userId);
             if (entryToDelete == null)
             {
                 return NotFound();
             }
 
-            _entryRepository.Delete(entryToDelete);
+            _entryRepository.Delete(entryToDelete, userId);
             return NoContent();
         }
 
@@ -118,7 +149,8 @@ namespace backend.infrastructure.http.controller
             if (dateFrom > dateTo)
                 return BadRequest("dateFrom cannot be later than dateTo");
             
-            var entries = _entryRepository.FindAllWithinDateRange(dateFrom, dateTo);
+            var userId = GetUserId();
+            var entries = _entryRepository.FindAllWithinDateRange(dateFrom, dateTo, userId);
             var summary = new Summary();
             summary.Entries = entries;
             summary.Value = _budgetCalculator.Calculate(entries);

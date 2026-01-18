@@ -1,5 +1,6 @@
 namespace backend.modules.budget.infrastructure.model;
 
+using backend.modules.user.domain;
 using backend.modules.budget.domain.entry;
 
 public class Entry
@@ -13,4 +14,7 @@ public class Entry
     public int Value { get; set; }
     public Type Type { get; set; }
     public DateTime EntryDate { get; set; }
+
+    public Guid? UserId { get; set; }
+    public User User { get; set; } = null!;
 }

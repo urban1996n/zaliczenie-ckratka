@@ -12,7 +12,8 @@ public class CategoryMapper
             new EntityId(model.Id),
             model.Name,
             model.CreatedAt,
-            model.UpdatedAt
+            model.UpdatedAt,
+            model.UserId
         );
     }
 
@@ -23,7 +24,8 @@ public class CategoryMapper
             Id = domain.Id.Value,
             Name = domain.Name,
             CreatedAt = domain.CreatedAt,
-            UpdatedAt = domain.UpdatedAt
+            UpdatedAt = domain.UpdatedAt,
+            UserId = domain.UserId
         };
     }
 }

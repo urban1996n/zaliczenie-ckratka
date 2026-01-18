@@ -1,5 +1,7 @@
 using backend.modules.budget.domain.category;
 using backend.modules.shared.domain.valueObject;
+using backend.modules.user.domain;
+using System;
 
 namespace backend.modules.budget.domain.entry;
 
@@ -12,12 +14,11 @@ public class Entry
     public DateTime? UpdatedAt { get; private set; }
     public string Name { get; private set; }
     public string? Description { get; private set; }
-
     public Type Type { get; private set; }
-    
     public DateTime EntryDate { get; private set; }
+    public Guid UserId { get; private set; } // Add UserId to domain model
 
-    public Entry(EntityId id, int value, Category? category, DateTime createdAt, DateTime? updatedAt, string name, string? description, Type type, DateTime entryDate)
+    public Entry(EntityId id, int value, Category? category, DateTime createdAt, DateTime? updatedAt, string name, string? description, Type type, DateTime entryDate, Guid userId)
     {
         Id = id;
         Value = value;
@@ -28,9 +29,10 @@ public class Entry
         Description = description;
         Type = type;
         EntryDate = entryDate;
+        UserId = userId;
     }
 
-    public Entry(int value, Category? category, DateTime createdAt, string name, string? description, Type type, DateTime entryDate)
+    public Entry(int value, Category? category, DateTime createdAt, string name, string? description, Type type, DateTime entryDate, Guid userId)
     {
         Value = value;
         Category = category;
@@ -39,6 +41,7 @@ public class Entry
         Description = description;
         Type = type;
         EntryDate = entryDate;
+        UserId = userId;
     }
 
     public bool IsExpense()

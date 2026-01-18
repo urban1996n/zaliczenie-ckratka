@@ -70,7 +70,7 @@ public class AuthController : ControllerBase
         var newRefreshToken = _authService.GenerateRefreshToken();
         await _authService.SetRefreshToken(user, newRefreshToken);
 
-        return Ok(new { Token = newAccessToken, RefreshToken = newRefreshToken });
+        return Ok(new { Token = newAccessToken.token, RefreshToken = newRefreshToken, expiresAt = newAccessToken.ExpiryTime.ToString("O") });
     }
 }
 
