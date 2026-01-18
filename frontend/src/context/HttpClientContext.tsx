@@ -15,7 +15,7 @@ interface AuthProviderProps {
 }
 
 export const HttpProvider = ({ tokenContainer, children }: AuthProviderProps) => {
-  const httpClient = useMemo(() => new HttpClient(tokenContainer), [tokenContainer]);
+  const httpClient = useMemo(() => new HttpClient(tokenContainer), []);
 
   return <HttpContext.Provider value={{ httpClient }}>{children}</HttpContext.Provider>;
 };

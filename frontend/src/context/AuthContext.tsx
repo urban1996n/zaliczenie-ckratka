@@ -1,22 +1,15 @@
 import { createContext, useState, useEffect, useMemo, useCallback } from 'react';
 import type { ReactNode } from 'react';
 import { jwtDecode } from 'jwt-decode';
-import {
-  login as apiLogin,
-  register as apiRegister,
-  refreshAccessToken as apiRefreshAccessToken,
-} from '../api/auth';
+import { login as apiLogin, register as apiRegister } from '../api/auth';
 import type { User, TokenResponse } from '../types/Auth';
 import { useNavigate } from 'react-router-dom';
-import { LocalStorageTokenContainer } from '../api/localStorageTokenContainer';
 import type { ITokenContainer } from '../api/tokenContainer.ts';
 import { useHttpClient } from './HttpClientContext.tsx';
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
-  accessToken: string | null;
-  getAccessToken: () => Promise<string | null>;
   login: (data: unknown) => Promise<void>;
   register: (data: unknown) => Promise<void>;
   logout: () => void;
@@ -30,21 +23,32 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
-export const AuthProvider = ({ children }: AuthProviderProps) => {
+export const AuthProvider = ({ children, tokenContainer }: AuthProviderProps) => {
   const httpClient = useHttpClient();
-  const localStorageTokenContainer = useMemo(() => new LocalStorageTokenContainer(), []);
 
   const [user, setUser] = useState<User | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(
-    localStorageTokenContainer.getToken()
+    tokenContainer.getToken()?.accessToken ?? null
   );
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const navigate = useNavigate();
 
   useEffect(() => {
-    const unsubscribe = localStorageTokenContainer.onTokenChange(setAccessToken);
-    return () => unsubscribe();
+    const unsubscribeFromTokenListener = tokenContainer.onTokenChange((token) => {
+      setAccessToken(token?.accessToken ?? null);
+    });
+
+    const unsubscribFromTokenClearListener = tokenContainer.onClearToken(() => {
+      setAccessToken(null);
+      navigate('/auth');
+    });
+
+    return () => {
+      unsubscribeFromTokenListener();
+      unsubscribFromTokenClearListener();
+    };
   }, []);
+
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const navigate = useNavigate();
 
   const updateUserFromToken = useCallback((token: string | null) => {
     if (token) {
@@ -53,7 +57,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setUser({ id: decodedToken.sub, email: decodedToken.email });
       } catch (error) {
         console.error('Failed to decode token:', error);
-        localStorageTokenContainer.clearTokens();
+        tokenContainer.clearToken();
         setUser(null);
       }
     } else {
@@ -66,43 +70,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     updateUserFromToken(accessToken);
   }, [accessToken, updateUserFromToken]);
 
-  const getAccessToken = useCallback(async (): Promise<string | null> => {
-    const currentToken = localStorageTokenContainer.getToken();
-    const currentRefreshToken = localStorageTokenContainer.getRefreshToken();
-    const expiresAt = localStorageTokenContainer.getExpiresAt();
-
-    if (!currentToken || !currentRefreshToken || !expiresAt) {
-      localStorageTokenContainer.clearTokens();
-      return null;
-    }
-
-    if (new Date() > new Date(expiresAt)) {
-      try {
-        const {
-          token: newToken,
-          refreshToken: newRefreshToken,
-          expiresAt: newExpiresAt,
-        } = await apiRefreshAccessToken(httpClient, currentRefreshToken);
-        localStorageTokenContainer.setToken(newToken);
-        localStorageTokenContainer.setRefreshToken(newRefreshToken);
-        localStorageTokenContainer.setExpiresAt(newExpiresAt);
-        return newToken;
-      } catch (error) {
-        console.error('Failed to refresh token', error);
-        localStorageTokenContainer.clearTokens();
-        return null;
-      }
-    }
-    return currentToken;
-  }, []);
-
   const login = useCallback(
     async (data: unknown) => {
-      const response: TokenResponse = await apiLogin(httpClient, data);
-      localStorageTokenContainer.setToken(response.token);
-      localStorageTokenContainer.setRefreshToken(response.refreshToken);
-      localStorageTokenContainer.setExpiresAt(response.expiresAt);
-      updateUserFromToken(response.token);
+      const { refreshToken, expiresAt, token }: TokenResponse = await apiLogin(httpClient, data);
+      tokenContainer.setToken({ accessToken: token, refreshToken, expiresAt });
+
+      updateUserFromToken(token);
       navigate('/dashboard');
     },
     [updateUserFromToken, navigate]
@@ -113,7 +86,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }, []);
 
   const logout = useCallback(() => {
-    localStorageTokenContainer.clearTokens();
+    tokenContainer.clearToken();
     setUser(null);
   }, []);
 
@@ -123,14 +96,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     () => ({
       user,
       isAuthenticated,
-      accessToken,
-      getAccessToken,
       login,
       register,
       logout,
       isLoading,
     }),
-    [user, isAuthenticated, accessToken, getAccessToken, login, register, logout, isLoading]
+    [user, isAuthenticated, login, register, logout, isLoading]
   );
 
   return <AuthContext.Provider value={authContextValue}>{children}</AuthContext.Provider>;

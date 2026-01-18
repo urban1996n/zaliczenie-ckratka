@@ -1,10 +1,13 @@
+export interface Token {
+  accessToken: string;
+  refreshToken: string;
+  expiresAt: string;
+}
+
 export interface ITokenContainer {
-  getToken: () => string | null;
-  getRefreshToken: () => string | null;
-  getExpiresAt: () => string | null;
-  setToken: (token: string | null) => void;
-  setRefreshToken: (refreshToken: string | null) => void;
-  setExpiresAt: (expiresAt: string | null) => void;
-  clearTokens: () => void;
-  onTokenChange: (callback: (token: string | null) => void) => () => void;
+  getToken: () => Token | null;
+  setToken: (token: Token | null) => void;
+  clearToken: () => void;
+  onTokenChange: (callback: (token: Token | null) => void) => () => void;
+  onClearToken: (callback: () => void) => () => void;
 }

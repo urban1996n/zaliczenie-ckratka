@@ -1,14 +1,36 @@
-import type { ITokenContainer } from './tokenContainer';
+import type { ITokenContainer, Token } from './tokenContainer';
 
 const TOKEN_KEY = 'jwt_token';
 const REFRESH_TOKEN_KEY = 'refresh_token';
 const EXPIRES_AT_KEY = 'expires_at';
 
 export class LocalStorageTokenContainer implements ITokenContainer {
-  private listeners: ((token: string | null) => void)[] = [];
+  private tokenChangeListeners: ((token: Token | null) => void)[] = [];
+  private clearStorageListener: (() => void)[] = [];
 
-  getToken = (): string | null => {
-    return localStorage.getItem(TOKEN_KEY);
+  public setToken(token: Token | null) {
+    if (!token) {
+      return;
+    }
+
+    const { accessToken, refreshToken, expiresAt } = token;
+
+    this.setAccessToken(accessToken);
+    this.setRefreshToken(refreshToken);
+    this.setExpiresAt(expiresAt);
+    this.notifyListeners(token);
+  }
+
+  getToken = (): Token | null => {
+    const accessToken = this.getAccesstoken();
+    const refreshToken = this.getRefreshToken();
+    const expiresAt = this.getExpiresAt();
+
+    if (!accessToken || !refreshToken || !expiresAt) {
+      return null;
+    }
+
+    return { accessToken, refreshToken, expiresAt };
   };
 
   getRefreshToken = (): string | null => {
@@ -19,16 +41,19 @@ export class LocalStorageTokenContainer implements ITokenContainer {
     return localStorage.getItem(EXPIRES_AT_KEY);
   };
 
-  setToken = (token: string | null) => {
+  setAccessToken = (token: string | null) => {
     if (token) {
       localStorage.setItem(TOKEN_KEY, token);
     } else {
       localStorage.removeItem(TOKEN_KEY);
     }
-    this.notifyListeners(token);
   };
 
-  setRefreshToken = (refreshToken: string | null) => {
+  private getAccesstoken(): string | null {
+    return localStorage.getItem(TOKEN_KEY);
+  }
+
+  private setRefreshToken = (refreshToken: string | null) => {
     if (refreshToken) {
       localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
     } else {
@@ -36,7 +61,7 @@ export class LocalStorageTokenContainer implements ITokenContainer {
     }
   };
 
-  setExpiresAt = (expiresAt: string | null) => {
+  private setExpiresAt = (expiresAt: string | null) => {
     if (expiresAt) {
       localStorage.setItem(EXPIRES_AT_KEY, expiresAt);
     } else {
@@ -44,21 +69,30 @@ export class LocalStorageTokenContainer implements ITokenContainer {
     }
   };
 
-  clearTokens = () => {
+  clearToken = () => {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(REFRESH_TOKEN_KEY);
     localStorage.removeItem(EXPIRES_AT_KEY);
+
     this.notifyListeners(null);
   };
 
-  onTokenChange = (callback: (token: string | null) => void): (() => void) => {
-    this.listeners.push(callback);
+  onTokenChange = (callback: (token: Token | null) => void): (() => void) => {
+    this.tokenChangeListeners.push(callback);
     return () => {
-      this.listeners = this.listeners.filter((listener) => listener !== callback);
+      this.tokenChangeListeners = this.tokenChangeListeners.filter(
+        (listener) => listener !== callback
+      );
     };
   };
 
-  private notifyListeners = (token: string | null) => {
-    this.listeners.forEach((listener) => listener(token));
+  onClearToken(callback: () => void) {
+    this.clearStorageListener.push(callback);
+
+    return () => this.clearStorageListener.filter((listener) => listener !== callback);
+  }
+
+  private notifyListeners = (token: Token | null) => {
+    this.tokenChangeListeners.forEach((listener) => listener(token));
   };
 }

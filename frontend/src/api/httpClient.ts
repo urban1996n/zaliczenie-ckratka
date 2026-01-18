@@ -1,9 +1,53 @@
-import { type ITokenContainer } from './tokenContainer';
+import { type ITokenContainer, type Token } from './tokenContainer';
 import { refreshAccessToken } from './auth';
 
 const BASE_URL = 'http://localhost:5010/api';
 
+const MAX_RETRIES = 5;
+let CURRENT_TRY = 0;
+
+const isTokenValid = (token: Token | null) => {
+  if (!token) {
+    return false;
+  }
+
+  return new Date() < new Date(token.expiresAt);
+};
+
+const tryRefreshToken = async (httpClient: HttpClient, token: Token | null): Promise<Token> => {
+  if (!token?.refreshToken) {
+    throw new Error('Cannot refresh token');
+  }
+
+  while (true) {
+    CURRENT_TRY++;
+    if (CURRENT_TRY >= MAX_RETRIES) {
+      throw new Error('Maximum retries exceeded');
+    }
+
+    try {
+      const response = await refreshAccessToken(httpClient, token.refreshToken);
+
+      if (!response) {
+        console.error('Empty access token response');
+
+        continue;
+      }
+
+      return {
+        accessToken: response.token,
+        expiresAt: response.expiresAt,
+        refreshToken: response.refreshToken,
+      };
+    } catch (error) {
+      console.error(error);
+    }
+  }
+};
+
 export class HttpClient {
+  private accessGranted: boolean = false;
+
   private tokenContainer: ITokenContainer;
 
   constructor(tokenContainer: ITokenContainer) {
@@ -16,8 +60,9 @@ export class HttpClient {
     };
     const token = this.tokenContainer.getToken();
     if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
+      headers['Authorization'] = `Bearer ${token.accessToken}`;
     }
+
     return headers;
   };
 
@@ -32,28 +77,16 @@ export class HttpClient {
   };
 
   private ensureValidToken = async (url: string) => {
-    if (/\/auth\/(login|register)$/.test(url)) {
+    if (/\/auth\/(login|register|refresh)$/.test(url)) {
       return;
     }
 
     const token = this.tokenContainer.getToken();
-    const expiresAt = this.tokenContainer.getExpiresAt();
+    if (!isTokenValid(token) || !this.accessGranted) {
+      const newToken = await tryRefreshToken(this, token);
 
-    if (token && expiresAt && new Date() > new Date(expiresAt)) {
-      try {
-        const {
-          token: newToken,
-          refreshToken: newRefreshToken,
-          expiresAt: newExpiresAt,
-        } = await refreshAccessToken(this, this.tokenContainer.getRefreshToken() || '');
-        this.tokenContainer.setToken(newToken);
-        this.tokenContainer.setRefreshToken(newRefreshToken);
-        this.tokenContainer.setExpiresAt(newExpiresAt);
-      } catch (error) {
-        console.error('Failed to refresh token', error);
-        this.tokenContainer.clearTokens();
-        // Handle token refresh failure, e.g., by logging out the user
-      }
+      this.tokenContainer.setToken(newToken);
+      this.accessGranted = true;
     }
   };
 
