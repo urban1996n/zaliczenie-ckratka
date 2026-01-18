@@ -2,6 +2,7 @@ using backend.infrastructure.database;
 using backend.modules.budget.domain.entry;
 using backend.modules.budget.infrastructure.mapper;
 using backend.modules.shared.domain.valueObject;
+using Microsoft.EntityFrameworkCore;
 using Model = backend.modules.budget.infrastructure.model.Entry;
 namespace backend.modules.budget.infrastructure.repository;
 
@@ -62,6 +63,7 @@ public class EFEntryRepository: IEntryRepository
     public IEnumerable<Entry> FindAllWithinDateRange(DateTime startDate, DateTime endDate, Guid userId)
     {
         return _context.Entries
+            .Include(e => e.Category)
             .Where(e => e.EntryDate >= startDate && e.EntryDate <= endDate && e.UserId == userId)
             .Select(e => _mapper.ToDomain(e))
             .ToList();
@@ -69,7 +71,9 @@ public class EFEntryRepository: IEntryRepository
 
     public Entry? FindById(EntityId id, Guid userId)
     {
-        var model = _context.Entries.FirstOrDefault(e => e.Id == id.Value && e.UserId == userId);
+        var model = _context.Entries
+            .Include(e => e.Category)
+            .FirstOrDefault(e => e.Id == id.Value && e.UserId == userId);
         return model == null ? null : _mapper.ToDomain(model);
     }
 }
