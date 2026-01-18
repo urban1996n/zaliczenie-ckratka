@@ -1,13 +1,12 @@
-using backend.infrastructure.http.controller.dto;
 using backend.modules.budget.domain.calculator;
 using backend.modules.budget.domain.category;
 using Microsoft.AspNetCore.Mvc;
 using backend.modules.budget.domain.entry;
 using backend.modules.budget.infrastructure.mapper;
 using backend.modules.shared.domain.valueObject;
-using Model =  backend.modules.budget.infrastructure.model.Entry;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using Type = backend.modules.budget.domain.entry.Type;
 
 namespace backend.infrastructure.http.controller
 {
@@ -70,7 +69,7 @@ namespace backend.infrastructure.http.controller
         }
 
         [HttpPost]
-        public ActionResult<Entry> CreateEntry([FromBody] EntryDto entry)
+        public ActionResult<Entry> CreateEntry([FromBody] EntryDTO entry)
         {
             if (!ModelState.IsValid)
             {
@@ -93,7 +92,7 @@ namespace backend.infrastructure.http.controller
         }
 
         [HttpPut("{id}")]
-        public IActionResult UpdateEntry(int id, [FromBody] EntryDto entry)
+        public IActionResult UpdateEntry(int id, [FromBody] EntryDTO entry)
         {
             if (!ModelState.IsValid)
             {
@@ -151,11 +150,12 @@ namespace backend.infrastructure.http.controller
             
             var userId = GetUserId();
             var entries = _entryRepository.FindAllWithinDateRange(dateFrom, dateTo, userId);
-            var summary = new Summary();
-            summary.Entries = entries;
-            summary.Value = _budgetCalculator.Calculate(entries);
-            
+            var summary = new Summary(entries, _budgetCalculator.Calculate(entries));
+
             return Ok(summary);
         }
     }
 }
+
+public record EntryDTO(string Name, string? Description, int? CategoryId, int Value, Type Type, string EntryDate);
+public record Summary(IEnumerable<Entry> Entries, int Value); 

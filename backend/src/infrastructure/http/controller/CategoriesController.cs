@@ -54,7 +54,7 @@ namespace backend.infrastructure.http.controller
         }
 
         [HttpPost]
-        public ActionResult<Category> CreateCategory([FromBody] Model category)
+        public ActionResult<Category> CreateCategory([FromBody] CategoryDTO category)
         {
             if (!ModelState.IsValid)
             {
@@ -62,16 +62,14 @@ namespace backend.infrastructure.http.controller
             }
 
             var userId = GetUserId();
-            category.UserId = userId; // Ensure UserId is set on the infrastructure model
-            category.CreatedAt = DateTime.UtcNow;
-            var newCategory = _categoryMapper.ToDomain(category);
+            var newCategory = new Category(new EntityId(category.Id), category.Name, DateTime.UtcNow, null, userId);
             _categoryRepository.Save(newCategory, userId);
 
             return CreatedAtAction(nameof(GetCategoryById), new { id = newCategory.Id.Value }, newCategory);
         }
 
         [HttpPut("{id}")]
-        public IActionResult UpdateCategory(int id, [FromBody] Model category)
+        public IActionResult UpdateCategory(int id, [FromBody] CategoryDTO category)
         {
             if (!ModelState.IsValid)
             {
@@ -109,3 +107,5 @@ namespace backend.infrastructure.http.controller
         }
     }
 }
+
+public record CategoryDTO(int Id, string Name);

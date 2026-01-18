@@ -35,5 +35,10 @@ public class DefaultDatabaseContext : DbContext
             .HasOne(e => e.User)
             .WithMany()
             .HasForeignKey(e => e.UserId);
+        
+        modelBuilder.Entity<Entry>()
+            .HasOne(e => e.Category)
+            .WithMany()
+            .HasForeignKey("CategoryId");
     }
 }

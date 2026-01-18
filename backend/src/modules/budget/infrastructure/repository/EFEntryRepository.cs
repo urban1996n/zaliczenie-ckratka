@@ -24,6 +24,11 @@ public class EFEntryRepository: IEntryRepository
             : null;
 
         var modelToSave = _mapper.ToModel(entry);
+        if (modelToSave.Category != null)
+        {
+            modelToSave.Category = _context.Categories.FirstOrDefault(c => c.Id == modelToSave.Category.Id && c.UserId == userId);
+        }
+
         modelToSave.UserId = userId; // Ensure UserId is set on the model to be saved
 
         if (model != null)
