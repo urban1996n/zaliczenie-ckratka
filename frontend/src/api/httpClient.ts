@@ -83,10 +83,17 @@ export class HttpClient {
 
     const token = this.tokenContainer.getToken();
     if (!isTokenValid(token) || !this.accessGranted) {
-      const newToken = await tryRefreshToken(this, token);
+      try {
+        const newToken = await tryRefreshToken(this, token);
 
-      this.tokenContainer.setToken(newToken);
-      this.accessGranted = true;
+        this.tokenContainer.setToken(newToken);
+        this.accessGranted = true;
+      } catch (e) {
+        console.error(e);
+
+        this.accessGranted = false;
+        this.tokenContainer.clearToken();
+      }
     }
   };
 
